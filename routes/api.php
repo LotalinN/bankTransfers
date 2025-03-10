@@ -25,3 +25,16 @@ Route::middleware('auth:api')->group(function () {
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::middleware('auth:api')->group(function () {
+    // Создание банковского аккаунта
+    Route::post('bank-accounts', [BankAccountController::class, 'store']);
+    // Получение списка банковских аккаунтов
+    Route::get('bank-accounts', [BankAccountController::class, 'index']);
+    // Удаление банковского аккаунта
+    Route::delete('bank-accounts/{id}', [BankAccountController::class, 'destroy']);
+    // Перевод средств между счетами
+    Route::post('transactions', [TransactionController::class, 'store']);
+    // Получение истории переводов
+    Route::get('transactions', [TransactionController::class, 'index']);
+});
