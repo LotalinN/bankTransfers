@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Http\Resources\UserResource;
+use App\Model\User;
 
 class AuthController extends Controller
 {
@@ -21,7 +23,11 @@ class AuthController extends Controller
 
     public function me()
     {
-        return response()->json(Auth::user());
+        return new UserResource(Auth::user());
+    }
+
+    public function authUser(){
+        return new UserResource(Auth::user());
     }
 
     public function logout()
@@ -42,5 +48,10 @@ class AuthController extends Controller
             'token_type' => 'bearer',
             'expires_in' => JWTAuth::factory()->getTTL() * 60,
         ]);
+    }
+    
+    public function create()
+    {
+        return view('auth.register');
     }
 }

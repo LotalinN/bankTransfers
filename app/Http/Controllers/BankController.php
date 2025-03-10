@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bank;
 use Illuminate\Http\Request;
 
 class BankController extends Controller
@@ -11,7 +12,11 @@ class BankController extends Controller
      */
     public function index()
     {
-        //
+        $banks = Bank::all();
+
+        return response()->json([
+            'banks' => $banks,
+        ]);
     }
 
     /**
@@ -27,7 +32,20 @@ class BankController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'code' => 'required|string|unique:banks',
+        ]);
+
+        $bank = Bank::create([
+            'name' => $request->name,
+            'code' => $request->code,
+        ]);
+
+        return response()->json([
+            'message' => 'Bank created successfully',
+            'bank' => $bank,
+        ], 201);
     }
 
     /**
@@ -35,7 +53,11 @@ class BankController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $bank = Bank::findOrFail($id);
+
+        return response()->json([
+            'bank' => $bank,
+        ]);
     }
 
     /**
@@ -51,14 +73,30 @@ class BankController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'name' => 'sometimes|string|max:255',
+            'code' => 'sometimes|string|unique:banks,code,' . $id,
+        ]);
+
+        $bank = Bank::findOrFail($id);
+        $bank->update($request->only(['name', 'code']));
+
+        return response()->json([
+            'message' => 'Bank updated successfully',
+            'bank' => $bank,
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $bank = Bank::findOrFail($id);
+        $bank->delete();
+
+        return response()->json([
+            'message' => 'Bank deleted successfully',
+        ]);
     }
 }
